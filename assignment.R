@@ -9,14 +9,15 @@ library(factoextra)
 # сохраните как символьный вектор
 top_speakers <- friends |> 
   count(speaker, sort = TRUE) |> 
-  head(6)
+  head(6) |> 
+  pull(speaker)
   
 # 2. отфильтруйте топ-спикеров, 
 # токенизируйте их реплики, удалите из них цифры
 # столбец с токенами должен называться word
 # оставьте только столбцы speaker, word
 friends_tokens <- friends |> 
-  semi_join(top_speakers, by = "speaker") |>
+  filter(speaker %in% top_speakers) |>
   unnest_tokens(word, text) |> 
   filter(!str_detect(word, "\\d")) |> 
   select(speaker, word)
@@ -29,7 +30,8 @@ friends_tf <- friends_tokens |>
   arrange(desc(n)) |>
   slice_head(n = 500) |>
   mutate(tf = n / sum(n)) |>
-  ungroup()
+  ungroup() |>
+  select(-n)
 
 # 4. преобразуйте в широкий формат; 
 # столбец c именем спикера превратите в имя ряда, используя подходящую функцию 
