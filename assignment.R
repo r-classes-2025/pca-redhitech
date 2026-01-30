@@ -1,3 +1,9 @@
+# --- ОБЯЗАТЕЛЬНО ПОДКЛЮЧИТЕ БИБЛИОТЕКИ В НАЧАЛЕ ---
+library(friends)
+library(tidyverse)
+library(tidytext)
+library(factoextra)
+
 # 1. отберите 6 главных персонажей (по количеству реплик)
 # сохраните как символьный вектор
 top_speakers <- friends |> 
@@ -24,7 +30,7 @@ friends_tf <- friends_tokens |>
   # ваш код здесь
   count(speaker, word) |>
   group_by(speaker) |>
-  slice_max(n, n = 500, with_ties = FALSE) |>
+  slice_max(n, n = 500, with_ties = FALSE) |> # Отлично, это решает проблему разного кол-ва слов!
   mutate(prop = n / sum(n)) |>
   ungroup()
 
@@ -42,13 +48,11 @@ friends_tf_wide <- friends_tf |>
 
 set.seed(123)
 # ваш код здесь
-km.out <- # ваш код здесь
 km.out <- kmeans(scale(friends_tf_wide), centers = 3, nstart = 20)
 
 
 # 6. примените к матрице метод главных компонент (prcomp)
 # центрируйте и стандартизируйте, использовав аргументы функции
-pca_fit <- # ваш код здесь
 pca_fit <- prcomp(friends_tf_wide, center = TRUE, scale. = TRUE)
 
 # 7. Покажите наблюдения и переменные вместе (биплот)
@@ -56,9 +60,6 @@ pca_fit <- prcomp(friends_tf_wide, center = TRUE, scale. = TRUE)
 # цветом закодируйте кластер, выделенный при помощи k-means
 # отберите 20 наиболее значимых переменных (по косинусу, см. документацию к функции)
 # сохраните график как переменную q
-
-q <- # ваш код здесь
-
 
 q <- fviz_pca_biplot(pca_fit,  geom = c("text"),
                 select.var = list(cos2 = 20),
@@ -68,3 +69,6 @@ q <- fviz_pca_biplot(pca_fit,  geom = c("text"),
                 repel = TRUE,
                 ggtheme = theme_minimal()) +
   theme(legend.position = "none")
+
+# Вывести график (опционально)
+q
